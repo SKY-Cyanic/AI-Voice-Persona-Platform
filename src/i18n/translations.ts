@@ -1,0 +1,310 @@
+export type Language = 'en' | 'ko';
+
+export interface CategoryTranslation {
+  name: string;
+  description: string;
+}
+
+export interface Translations {
+  // App
+  appTitle: string;
+  appSubtitle: string;
+
+  // API Key Screen
+  apiKeyTitle: string;
+  apiKeySubtitle: string;
+  apiKeyPlaceholder: string;
+  apiKeyButton: string;
+  apiKeyGetKey: string;
+  apiKeyGetKeyLink: string;
+  apiKeyNote: string;
+  apiKeyInvalid: string;
+  apiKeyChangeKey: string;
+
+  // Home
+  talkingNow: string;
+  explore: string;
+  profile: string;
+  callsMade: string;
+  avgTime: string;
+  connectTime: string;
+  randomAll: string;
+  callNow: string;
+  pressToConnect: string;
+  anonymous: string;
+
+  // Connecting
+  findingMatch: string;
+  connectingPersona: string;
+  pickingUp: string;
+  connectedExclaim: string;
+
+  // Call
+  connectedLabel: string;
+  connectingLabel: string;
+
+  // Post Call
+  callEnded: string;
+  withPerson: string;
+  xpEarned: string;
+  rateConversation: string;
+  save: string;
+  saved: string;
+  share: string;
+  shared: string;
+  exportLabel: string;
+  callAgain: string;
+  newMatch: string;
+
+  // Explore
+  exploreTitle: string;
+  personasLabel: string;
+  searchPlaceholder: string;
+  all: string;
+  noPersonasFound: string;
+  tryDifferent: string;
+  levelRequired: string;
+
+  // Profile
+  profileTitle: string;
+  levelCaller: string;
+  totalCalls: string;
+  minutesTalked: string;
+  favorites: string;
+  totalXP: string;
+  achievementsTitle: string;
+
+  // Achievements
+  achFirstContact: string;
+  achFirstContactDesc: string;
+  achRegularCaller: string;
+  achRegularCallerDesc: string;
+  achCallAddict: string;
+  achCallAddictDesc: string;
+  achChatterbox: string;
+  achChatterboxDesc: string;
+  achMarathonCaller: string;
+  achMarathonCallerDesc: string;
+  achNightOwl: string;
+  achNightOwlDesc: string;
+  achCollector: string;
+  achCollectorDesc: string;
+  achExplorer: string;
+  achExplorerDesc: string;
+  achLegend: string;
+  achLegendDesc: string;
+
+  // Categories
+  categories: Record<string, CategoryTranslation>;
+
+  // Language
+  languageLabel: string;
+
+  // Prompt language instructions
+  promptLangInstruction: string;
+}
+
+export const translations: Record<Language, Translations> = {
+  en: {
+    appTitle: 'LIVEPERSONA',
+    appSubtitle: 'Random AI Voice Calls • Instant Connection • Infinite Personas',
+
+    apiKeyTitle: 'Welcome to LivePersona',
+    apiKeySubtitle: 'Enter your Gemini API key to start making calls',
+    apiKeyPlaceholder: 'Paste your Gemini API key here...',
+    apiKeyButton: '🚀 Start Calling',
+    apiKeyGetKey: 'Get your free API key from',
+    apiKeyGetKeyLink: 'Google AI Studio',
+    apiKeyNote: 'Your key is stored locally in your browser and never shared with anyone.',
+    apiKeyInvalid: 'Please enter a valid API key (at least 10 characters)',
+    apiKeyChangeKey: 'Change API Key',
+
+    talkingNow: 'talking now',
+    explore: 'Explore',
+    profile: 'Profile',
+    callsMade: 'calls made',
+    avgTime: 'Avg 8.4 min',
+    connectTime: '0.3s connect',
+    randomAll: 'Random (All Categories)',
+    callNow: 'CALL NOW',
+    pressToConnect: 'Press to instantly connect with a random AI persona.',
+    anonymous: '100% anonymous • Real-time voice • Emotional AI',
+
+    findingMatch: 'Finding your match...',
+    connectingPersona: 'Connecting to persona...',
+    pickingUp: 'is picking up...',
+    connectedExclaim: 'Connected!',
+
+    connectedLabel: 'Connected',
+    connectingLabel: 'Connecting...',
+
+    callEnded: 'Call Ended',
+    withPerson: 'with',
+    xpEarned: 'XP Earned',
+    rateConversation: 'Rate this conversation',
+    save: 'Save',
+    saved: 'Saved!',
+    share: 'Share',
+    shared: 'Copied!',
+    exportLabel: 'Export',
+    callAgain: 'Call Again',
+    newMatch: 'New Match',
+
+    exploreTitle: 'Explore Personas',
+    personasLabel: 'personas',
+    searchPlaceholder: 'Search personas, tags, categories...',
+    all: 'All',
+    noPersonasFound: 'No personas found',
+    tryDifferent: 'Try a different search or category',
+    levelRequired: 'Level {level} required',
+
+    profileTitle: 'Profile',
+    levelCaller: 'Level {level} Caller',
+    totalCalls: 'Total Calls',
+    minutesTalked: 'Minutes Talked',
+    favorites: 'Favorites',
+    totalXP: 'Total XP',
+    achievementsTitle: 'Achievements',
+
+    achFirstContact: 'First Contact',
+    achFirstContactDesc: 'Make your first call',
+    achRegularCaller: 'Regular Caller',
+    achRegularCallerDesc: 'Make 10 calls',
+    achCallAddict: 'Call Addict',
+    achCallAddictDesc: 'Make 50 calls',
+    achChatterbox: 'Chatterbox',
+    achChatterboxDesc: 'Talk for 60 minutes total',
+    achMarathonCaller: 'Marathon Caller',
+    achMarathonCallerDesc: 'Talk for 5 hours total',
+    achNightOwl: 'Night Owl',
+    achNightOwlDesc: 'Make a call after midnight',
+    achCollector: 'Collector',
+    achCollectorDesc: 'Save 5 favorite personas',
+    achExplorer: 'Explorer',
+    achExplorerDesc: 'Try 10 different categories',
+    achLegend: 'Legend',
+    achLegendDesc: 'Talk to a legendary persona',
+
+    categories: {
+      healing: { name: 'Healing', description: 'Comfort & emotional support' },
+      romance: { name: 'Romance', description: 'Love, flirting & connection' },
+      comedy: { name: 'Comedy', description: 'Laughs & good times' },
+      horror: { name: 'Horror', description: 'Scares & thrills' },
+      idol: { name: 'Idol & Celebrity', description: 'Stars & performers' },
+      intellectual: { name: 'Intellectual', description: 'Deep talks & knowledge' },
+      adventure: { name: 'Adventure', description: 'Quests & exploration' },
+      mystic: { name: 'Mystic', description: 'Fortune & spirituality' },
+      asmr: { name: 'ASMR & Relax', description: 'Soothing & calming' },
+      motivation: { name: 'Motivation', description: 'Push & inspiration' },
+      scifi: { name: 'Sci-Fi', description: 'Future & technology' },
+      fantasy: { name: 'Fantasy', description: 'Magic & mythical' },
+      language: { name: 'Language', description: 'Learn & practice' },
+      villain: { name: 'Villain', description: 'Dark & devious' },
+      chaos: { name: 'Chaos', description: 'Wild & unpredictable' },
+    },
+
+    languageLabel: 'Language',
+    promptLangInstruction: '\n\nIMPORTANT: You MUST respond entirely in English. All your dialogue, reactions, emotional expressions, and conversations must be in natural English.',
+  },
+  ko: {
+    appTitle: 'LIVEPERSONA',
+    appSubtitle: '랜덤 AI 음성 통화 • 즉시 연결 • 무한 페르소나',
+
+    apiKeyTitle: 'LivePersona에 오신 것을 환영합니다',
+    apiKeySubtitle: 'Gemini API 키를 입력하여 통화를 시작하세요',
+    apiKeyPlaceholder: 'Gemini API 키를 여기에 붙여넣기...',
+    apiKeyButton: '🚀 통화 시작',
+    apiKeyGetKey: '에서 무료 API 키를 받으세요',
+    apiKeyGetKeyLink: 'Google AI Studio',
+    apiKeyNote: '키는 브라우저에 로컬로 저장되며 누구와도 공유되지 않습니다.',
+    apiKeyInvalid: '유효한 API 키를 입력해주세요 (최소 10자)',
+    apiKeyChangeKey: 'API 키 변경',
+
+    talkingNow: '명 통화 중',
+    explore: '탐색',
+    profile: '프로필',
+    callsMade: '통화 완료',
+    avgTime: '평균 8.4분',
+    connectTime: '0.3초 연결',
+    randomAll: '랜덤 (전체 카테고리)',
+    callNow: '지금 전화',
+    pressToConnect: '버튼을 누르면 랜덤 AI 페르소나와 즉시 연결됩니다.',
+    anonymous: '100% 익명 • 실시간 음성 • 감정 AI',
+
+    findingMatch: '매칭 중...',
+    connectingPersona: '페르소나 연결 중...',
+    pickingUp: '님이 전화를 받는 중...',
+    connectedExclaim: '연결됨!',
+
+    connectedLabel: '연결됨',
+    connectingLabel: '연결 중...',
+
+    callEnded: '통화 종료',
+    withPerson: '와(과)',
+    xpEarned: '획득한 XP',
+    rateConversation: '이 대화를 평가하세요',
+    save: '저장',
+    saved: '저장됨!',
+    share: '공유',
+    shared: '복사됨!',
+    exportLabel: '내보내기',
+    callAgain: '다시 전화',
+    newMatch: '새 매칭',
+
+    exploreTitle: '페르소나 탐색',
+    personasLabel: '페르소나',
+    searchPlaceholder: '페르소나, 태그, 카테고리 검색...',
+    all: '전체',
+    noPersonasFound: '페르소나를 찾을 수 없습니다',
+    tryDifferent: '다른 검색어나 카테고리를 시도하세요',
+    levelRequired: '레벨 {level} 필요',
+
+    profileTitle: '프로필',
+    levelCaller: '레벨 {level} 콜러',
+    totalCalls: '총 통화',
+    minutesTalked: '통화 시간 (분)',
+    favorites: '즐겨찾기',
+    totalXP: '총 XP',
+    achievementsTitle: '업적',
+
+    achFirstContact: '첫 통화',
+    achFirstContactDesc: '첫 번째 통화하기',
+    achRegularCaller: '단골 통화자',
+    achRegularCallerDesc: '10회 통화하기',
+    achCallAddict: '통화 중독',
+    achCallAddictDesc: '50회 통화하기',
+    achChatterbox: '수다쟁이',
+    achChatterboxDesc: '총 60분 통화하기',
+    achMarathonCaller: '마라톤 통화자',
+    achMarathonCallerDesc: '총 5시간 통화하기',
+    achNightOwl: '올빼미족',
+    achNightOwlDesc: '자정 이후 통화하기',
+    achCollector: '수집가',
+    achCollectorDesc: '즐겨찾기 5개 저장하기',
+    achExplorer: '탐험가',
+    achExplorerDesc: '10개 카테고리 시도하기',
+    achLegend: '전설',
+    achLegendDesc: '전설 페르소나와 통화하기',
+
+    categories: {
+      healing: { name: '힐링', description: '위로와 감정 지원' },
+      romance: { name: '로맨스', description: '사랑, 플러팅 & 연결' },
+      comedy: { name: '코미디', description: '웃음 & 즐거운 시간' },
+      horror: { name: '공포', description: '무서움 & 스릴' },
+      idol: { name: '아이돌 & 셀럽', description: '스타 & 퍼포머' },
+      intellectual: { name: '지식인', description: '깊은 대화 & 지식' },
+      adventure: { name: '모험', description: '퀘스트 & 탐험' },
+      mystic: { name: '신비', description: '운명 & 영성' },
+      asmr: { name: 'ASMR & 릴렉스', description: '편안함 & 진정' },
+      motivation: { name: '동기부여', description: '푸시 & 영감' },
+      scifi: { name: 'SF', description: '미래 & 기술' },
+      fantasy: { name: '판타지', description: '마법 & 신화' },
+      language: { name: '언어', description: '학습 & 연습' },
+      villain: { name: '빌런', description: '어둠 & 사악함' },
+      chaos: { name: '카오스', description: '거침없는 & 예측불가' },
+    },
+
+    languageLabel: '언어',
+    promptLangInstruction: '\n\n중요: 반드시 한국어로만 대답하세요. 모든 대화, 반응, 감정 표현, 대화는 자연스러운 한국어로 해야 합니다. 존댓말과 반말을 캐릭터에 맞게 적절히 사용하세요.',
+  },
+};
