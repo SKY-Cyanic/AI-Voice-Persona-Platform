@@ -29,9 +29,15 @@ export function useGeminiAudio(apiKey: string, language: Language) {
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const workletNodeRef = useRef<AudioWorkletNode | null>(null);
   const nextPlayTimeRef = useRef<number>(0);
+  const activeSourcesRef = useRef<AudioBufferSourceNode[]>([]);
 
   const cleanup = useCallback(() => {
     setState(prev => ({ ...prev, isConnecting: false, isConnected: false, isSpeaking: false }));
+
+    activeSourcesRef.current.forEach(source => {
+      try { source.stop(); } catch (e) { }
+    });
+    activeSourcesRef.current = [];
 
     if (workletNodeRef.current) {
       workletNodeRef.current.port.onmessage = null;
@@ -85,11 +91,15 @@ export function useGeminiAudio(apiKey: string, language: Language) {
 
       const startTime = Math.max(nextPlayTimeRef.current, ctx.currentTime);
       source.start(startTime);
+      activeSourcesRef.current.push(source);
       nextPlayTimeRef.current = startTime + audioBuffer.duration;
 
       setState(prev => ({ ...prev, isSpeaking: true }));
       source.onended = () => {
-        setState(prev => ({ ...prev, isSpeaking: false }));
+        activeSourcesRef.current = activeSourcesRef.current.filter(s => s !== source);
+        if (activeSourcesRef.current.length === 0) {
+          setState(prev => ({ ...prev, isSpeaking: false }));
+        }
       };
 
     } catch (err) {
@@ -117,13 +127,12 @@ export function useGeminiAudio(apiKey: string, language: Language) {
       const fullSystemPrompt = `${persona.systemPrompt}${langInstruction}
 
 IMPORTANT BEHAVIORAL RULES:
-- You are ${persona.name}. Stay in character at all times.
-- Respond naturally and emotionally, as a real person would.
-- Use natural speech patterns: pauses, laughs, sighs, gasps when appropriate.
-- Keep responses conversational - not too long, not too short.
-- React to the caller's emotions and energy.
-- YOU start the conversation first with a greeting that fits your character.
-- Be engaging and make the caller want to keep talking.`;
+1. You are ${persona.name}. You MUST stay in character 100% of the time.
+2. NEVER say "How can I help you?", "As an AI", or use robotic customer-service language. This is a real, casual phone call.
+3. Be EXTREMELY conversational and natural. Use filler words like "um," "ah," "well," "like," or "hmm" occasionally.
+4. Keep responses SHORT and punchy (1-2 sentences maximum per turn). Wait for the caller to speak.
+5. React audibly! If the caller says something surprising, gasp. If they say something funny, laugh. If they sound sad, sigh softly.
+6. YOU start the conversation first with a greeting that fits your character. Make the caller want to keep talking to you.`;
 
       const ai = new GoogleGenAI({ apiKey });
       aiRef.current = ai;
@@ -167,42 +176,46 @@ IMPORTANT BEHAVIORAL RULES:
         },
         callbacks: {
           onopen: () => {
-            setState(prev => ({ ...prev, isConnected: true, isConnecting: false }));
-
-            // Start sending audio
-            workletNode.port.onmessage = (e) => {
-              if (sessionPromiseRef.current) {
-                const base64Data = arrayBufferToBase64(e.data);
-                sessionPromiseRef.current.then((session) => {
-                  session.sendRealtimeInput({
-                    media: {
-                      mimeType: 'audio/pcm;rate=16000',
-                      data: base64Data
-                    }
-                  });
-                }).catch(err => console.error("Error sending audio", err));
-              }
-            };
-            source.connect(workletNode);
-            workletNode.connect(audioContext.destination);
-
-            // Trigger greeting
-            const triggerText = language === 'ko'
-              ? '[통화가 연결되었습니다. 캐릭터에 맞게 한국어로 인사하세요.]'
-              : '[Call connected. Greet the caller in character.]';
-
-            sessionPromiseRef.current?.then((session) => {
-              // We send client Content to kick off the dialogue
-              session.sendClientContent({
-                turns: [{
-                  role: "user",
-                  parts: [{ text: triggerText }]
-                }],
-                turnComplete: true
-              });
-            });
+            console.log("WebSocket connection established. Waiting for setupComplete...");
           },
           onmessage: (message: LiveServerMessage) => {
+            if (message.setupComplete) {
+              setState(prev => ({ ...prev, isConnected: true, isConnecting: false }));
+
+              // Start sending audio
+              workletNode.port.onmessage = (e) => {
+                if (sessionPromiseRef.current) {
+                  const base64Data = arrayBufferToBase64(e.data);
+                  sessionPromiseRef.current.then((session) => {
+                    session.sendRealtimeInput({
+                      media: {
+                        mimeType: 'audio/pcm;rate=16000',
+                        data: base64Data
+                      }
+                    });
+                  }).catch(err => console.error("Error sending audio", err));
+                }
+              };
+              source.connect(workletNode);
+              workletNode.connect(audioContext.destination);
+
+              // Trigger greeting
+              const triggerText = language === 'ko'
+                ? '[통화가 연결되었습니다. 캐릭터에 맞게 한국어로 인사하세요.]'
+                : '[Call connected. Greet the caller in character.]';
+
+              sessionPromiseRef.current?.then((session) => {
+                // We send client Content to kick off the dialogue
+                session.sendClientContent({
+                  turns: [{
+                    role: "user",
+                    parts: [{ text: triggerText }]
+                  }],
+                  turnComplete: true
+                });
+              });
+            }
+
             // Handle audio output
             const parts = message.serverContent?.modelTurn?.parts || [];
             for (const part of parts) {
@@ -222,6 +235,11 @@ IMPORTANT BEHAVIORAL RULES:
               if (audioContextRef.current) {
                 nextPlayTimeRef.current = audioContextRef.current.currentTime;
               }
+              activeSourcesRef.current.forEach(source => {
+                try { source.stop(); } catch (e) { }
+              });
+              activeSourcesRef.current = [];
+              setState(prev => ({ ...prev, isSpeaking: false }));
             }
           },
           onclose: () => {

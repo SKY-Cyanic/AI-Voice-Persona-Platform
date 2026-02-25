@@ -40,3 +40,11 @@ The project revolves around standard React patterns with an entry point in `main
 Important Hooks & Components:
 - `useGeminiAudio.ts`: Manages the WebSocket connection to Gemini's BidiGenerateContent endpoint, captures microphone inputs using `AudioContext`, encodes PCM data to Base64, and queues server audio chunks to play.
 - **Components:** Modularized screens for `Home`, `Call`, `Explore`, `Profile`, and `PostCall`.
+
+## Troubleshooting Gemini Live API 🔧
+
+If you are developing or forking this project and run into WebSocket or Live API audio dropping issues, reference the following fixes that were implemented in `useGeminiAudio.ts`:
+
+1. **WebSocket Dropping (Race Condition):** Ensure the audio streams and client initial prompts are NOT fired directly inside the WebSocket `onopen` callback. The Gemini backend takes a few milliseconds to prepare the session. Wait for the `message.setupComplete` payload before initializing transmission.
+2. **Silent Audio Transmission Failures:** The SDK typings expect `sendRealtimeInput` payloads to be a direct object (`{ media: { mimeType, data } }`), not an array object (`[{ mediaChunks: ... }]`). Passing the incorrect shape causes the SDK to silently drop packets without throwing an error, resulting in the AI ignoring user speech.
+3. **Overlapping Audio (Interruptions):** Merely tracking `isSpeaking` isn't enough when the user interrupts the AI. The server responds with `interrupted: true`. The client must actively store `AudioBufferSourceNode` references in a tracker array, iterate, and call `.stop()` universally upon receiving this flag to forcefully flush audio buffers before the new generative run begins.

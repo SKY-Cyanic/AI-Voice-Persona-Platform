@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Phone, Sparkles, Users, Clock, Zap, ChevronDown, Globe, Settings } from 'lucide-react';
+import { Phone, Sparkles, Users, Clock, Zap, ChevronDown, Globe, Settings, Crown } from 'lucide-react';
 import { PersonaCategory } from '../types';
 import { categoryInfo } from '../data/personas';
 import { useI18n } from '../i18n/context';
@@ -7,12 +7,13 @@ import { useI18n } from '../i18n/context';
 interface HomeScreenProps {
   onStartCall: (category?: PersonaCategory) => void;
   onExplore: () => void;
+  onPremium: () => void;
   onProfile: () => void;
   totalCalls: number;
   onChangeApiKey: () => void;
 }
 
-export function HomeScreen({ onStartCall, onExplore, onProfile, totalCalls, onChangeApiKey }: HomeScreenProps) {
+export function HomeScreen({ onStartCall, onExplore, onPremium, onProfile, totalCalls, onChangeApiKey }: HomeScreenProps) {
   const { t, lang, setLang } = useI18n();
   const [onlineCount, setOnlineCount] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -71,6 +72,19 @@ export function HomeScreen({ onStartCall, onExplore, onProfile, totalCalls, onCh
           >
             <Sparkles size={12} />
             {t.explore}
+          </button>
+          {/* Premium button */}
+          <button
+            onClick={onPremium}
+            className="glass rounded-full px-3 py-1.5 text-xs font-bold transition-all flex items-center gap-1 shadow-[0_0_15px_rgba(255,45,120,0.4)] hover:shadow-[0_0_20px_rgba(255,45,120,0.6)] hover:scale-105"
+            style={{
+              background: 'linear-gradient(45deg, rgba(255,45,120,0.2), rgba(177,78,255,0.2))',
+              border: '1px solid rgba(255,45,120,0.5)',
+              color: '#fff'
+            }}
+          >
+            <Crown size={12} className="text-neon-yellow" />
+            Premium
           </button>
           <button
             onClick={onProfile}
@@ -153,9 +167,8 @@ export function HomeScreen({ onStartCall, onExplore, onProfile, totalCalls, onCh
           <div className="mt-2 glass rounded-2xl p-3 max-h-64 overflow-y-auto scrollbar-hide animate-fade-in">
             <button
               onClick={() => { setSelectedCategory('all'); setShowCategories(false); }}
-              className={`w-full text-left px-3 py-2 rounded-xl text-sm transition-all ${
-                selectedCategory === 'all' ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'
-              }`}
+              className={`w-full text-left px-3 py-2 rounded-xl text-sm transition-all ${selectedCategory === 'all' ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'
+                }`}
             >
               🎲 {t.randomAll}
             </button>
@@ -163,9 +176,8 @@ export function HomeScreen({ onStartCall, onExplore, onProfile, totalCalls, onCh
               <button
                 key={key}
                 onClick={() => { setSelectedCategory(key); setShowCategories(false); }}
-                className={`w-full text-left px-3 py-2 rounded-xl text-sm transition-all ${
-                  selectedCategory === key ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'
-                }`}
+                className={`w-full text-left px-3 py-2 rounded-xl text-sm transition-all ${selectedCategory === key ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  }`}
               >
                 {info.emoji} {getCategoryName(key)}
                 <span className="text-xs text-gray-600 ml-2">{getCategoryDesc(key)}</span>

@@ -33,7 +33,7 @@ export type PersonaCategory =
   | 'historical'
   | 'chaos';
 
-export type AppScreen = 'home' | 'connecting' | 'call' | 'postCall' | 'explore' | 'profile' | 'studio' | 'settings';
+export type AppScreen = 'home' | 'connecting' | 'call' | 'postCall' | 'explore' | 'profile' | 'studio' | 'settings' | 'premium';
 
 export interface CallState {
   persona: Persona | null;
@@ -55,6 +55,7 @@ export interface UserProfile {
   favorites: string[];
   unlockedPersonas: string[];
   achievements: Achievement[];
+  subscriptionTier?: 'free' | 'plus' | 'pro';
 }
 
 export interface Achievement {

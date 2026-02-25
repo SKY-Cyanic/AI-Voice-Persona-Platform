@@ -12,12 +12,13 @@ import { CallScreen } from './components/CallScreen';
 import { PostCallScreen } from './components/PostCallScreen';
 import { ExploreScreen } from './components/ExploreScreen';
 import { ProfileScreen } from './components/ProfileScreen';
+import { PremiumScreen } from './components/PremiumScreen';
 
 function loadProfile(): UserProfile {
   try {
     const saved = localStorage.getItem('livepersona_profile');
     if (saved) return JSON.parse(saved);
-  } catch {}
+  } catch { }
   return {
     nickname: `User${Math.floor(Math.random() * 9999)}`,
     avatar: '🎭',
@@ -34,14 +35,14 @@ function loadProfile(): UserProfile {
 function saveProfile(profile: UserProfile) {
   try {
     localStorage.setItem('livepersona_profile', JSON.stringify(profile));
-  } catch {}
+  } catch { }
 }
 
 function loadApiKey(): string {
   try {
     const saved = localStorage.getItem('livepersona_api_key');
     if (saved) return saved;
-  } catch {}
+  } catch { }
   // Fallback to env variable
   const envKey = import.meta.env.VITE_GEMINI_API_KEY;
   if (envKey) return envKey;
@@ -51,7 +52,7 @@ function loadApiKey(): string {
 function saveApiKey(key: string) {
   try {
     localStorage.setItem('livepersona_api_key', key);
-  } catch {}
+  } catch { }
 }
 
 function AppContent() {
@@ -187,6 +188,7 @@ function AppContent() {
           <HomeScreen
             onStartCall={startCall}
             onExplore={() => setScreen('explore')}
+            onPremium={() => setScreen('premium')}
             onProfile={() => setScreen('profile')}
             totalCalls={profile.totalCalls}
             onChangeApiKey={handleChangeApiKey}
@@ -235,6 +237,13 @@ function AppContent() {
           <ProfileScreen
             profile={profile}
             onBack={goHome}
+          />
+        )}
+
+        {screen === 'premium' && (
+          <PremiumScreen
+            onBack={goHome}
+            currentTier={profile.subscriptionTier || 'free'}
           />
         )}
       </div>

@@ -100,6 +100,24 @@ export interface Translations {
   // Language
   languageLabel: string;
 
+  // Premium
+  upgradeTitle: string;
+  upgradeSubtitle: string;
+  freePlan: string;
+  plusPlan: string;
+  proPlan: string;
+  currentPlan: string;
+  selectPlan: string;
+  featStandardInteractions: string;
+  featLimitedMinutes: string;
+  featStandardQuality: string;
+  featUnlimitedMinutes: string;
+  featPriorityQueue: string;
+  featHQVoices: string;
+  featExcitingContent: string;
+  featNanoBananaPro: string;
+  featEarlyAccess: string;
+
   // Prompt language instructions
   promptLangInstruction: string;
 }
@@ -204,6 +222,25 @@ export const translations: Record<Language, Translations> = {
     },
 
     languageLabel: 'Language',
+
+    // Premium
+    upgradeTitle: 'Upgrade to Premium',
+    upgradeSubtitle: 'Unlock the full potential of LivePersona with an upgraded plan.',
+    freePlan: 'Free',
+    plusPlan: 'Plus',
+    proPlan: 'Pro',
+    currentPlan: 'Current Plan',
+    selectPlan: 'Select Plan',
+    featStandardInteractions: 'Standard AI Interactions',
+    featLimitedMinutes: 'Limited monthly minutes',
+    featStandardQuality: 'Standard voice quality',
+    featUnlimitedMinutes: 'Unlimited monthly minutes',
+    featPriorityQueue: 'Priority queue access',
+    featHQVoices: 'High-quality 18+ voice models',
+    featExcitingContent: 'Exciting & Stimulating personas',
+    featNanoBananaPro: 'NanoBanana Pro (나노바나나 프로) Images',
+    featEarlyAccess: 'Early access to new features',
+
     promptLangInstruction: '\n\nIMPORTANT: You MUST respond entirely in English. All your dialogue, reactions, emotional expressions, and conversations must be in natural English.',
   },
   ko: {
@@ -305,6 +342,25 @@ export const translations: Record<Language, Translations> = {
     },
 
     languageLabel: '언어',
+
+    // Premium
+    upgradeTitle: '프리미엄 업그레이드',
+    upgradeSubtitle: '업그레이드 플랜으로 LivePersona의 모든 기능을 잠금 해제하세요.',
+    freePlan: '무료',
+    plusPlan: '플러스',
+    proPlan: '프로',
+    currentPlan: '현재 플랜',
+    selectPlan: '플랜 선택',
+    featStandardInteractions: '표준 AI 대화',
+    featLimitedMinutes: '월간 제한된 통화 시간',
+    featStandardQuality: '일반 음성 품질',
+    featUnlimitedMinutes: '무제한 월간 통화 시간',
+    featPriorityQueue: '우선 접속 대기열',
+    featHQVoices: '고품질 18+ 음성 모델',
+    featExcitingContent: '새롭고 자극적인 페르소나',
+    featNanoBananaPro: '나노바나나 프로 기반 이미지',
+    featEarlyAccess: '신규 기능 앞서 해보기',
+
     promptLangInstruction: '\n\n중요: 반드시 한국어로만 대답하세요. 모든 대화, 반응, 감정 표현, 대화는 자연스러운 한국어로 해야 합니다. 존댓말과 반말을 캐릭터에 맞게 적절히 사용하세요.',
   },
 };
