@@ -3,6 +3,7 @@ import { Phone, RefreshCw, Heart, Share2, Download, Star, ArrowLeft } from 'luci
 import { Persona } from '../types';
 import { getRarityColor } from '../data/personas';
 import { useI18n } from '../i18n/context';
+import { AdBanner } from './AdBanner';
 
 interface PostCallScreenProps {
   persona: Persona;
@@ -172,6 +173,10 @@ export function PostCallScreen({ persona, duration, onCallAgain, onNewCall, onGo
             <RefreshCw size={18} />
             {t.newMatch}
           </button>
+        </div>
+
+        <div className="mt-8 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+          <AdBanner dataAdSlot="postcall-bottom-ad" />
         </div>
       </div>
     </div>

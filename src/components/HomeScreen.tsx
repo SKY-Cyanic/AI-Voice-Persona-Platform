@@ -3,6 +3,7 @@ import { Phone, Sparkles, Users, Clock, Zap, ChevronDown, Globe, Settings, Crown
 import { PersonaCategory } from '../types';
 import { categoryInfo } from '../data/personas';
 import { useI18n } from '../i18n/context';
+import { AdBanner } from './AdBanner';
 
 interface HomeScreenProps {
   onStartCall: (category?: PersonaCategory) => void;
@@ -241,6 +242,10 @@ export function HomeScreen({ onStartCall, onExplore, onPremium, onProfile, total
             <span>{getCategoryName(key)}</span>
           </button>
         ))}
+      </div>
+
+      <div className="mt-auto w-full max-w-lg mb-4 animate-fade-in" style={{ animationDelay: '0.6s' }}>
+        <AdBanner dataAdSlot="home-bottom-ad" />
       </div>
     </div>
   );

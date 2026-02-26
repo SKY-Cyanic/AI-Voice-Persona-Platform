@@ -3,6 +3,7 @@ import { ArrowLeft, Search, Phone, Lock, Star } from 'lucide-react';
 import { Persona } from '../types';
 import { personas, categoryInfo, getRarityColor } from '../data/personas';
 import { useI18n } from '../i18n/context';
+import { AdBanner } from './AdBanner';
 
 interface ExploreScreenProps {
   onBack: () => void;
@@ -73,11 +74,10 @@ export function ExploreScreen({ onBack, onSelectPersona, userLevel }: ExploreScr
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
           <button
             onClick={() => setSelectedCategory('all')}
-            className={`shrink-0 px-3 py-1.5 rounded-full text-xs transition-all ${
-              selectedCategory === 'all'
-                ? 'bg-white/10 text-white border border-white/20'
-                : 'text-gray-500 hover:text-gray-300'
-            }`}
+            className={`shrink-0 px-3 py-1.5 rounded-full text-xs transition-all ${selectedCategory === 'all'
+              ? 'bg-white/10 text-white border border-white/20'
+              : 'text-gray-500 hover:text-gray-300'
+              }`}
           >
             {t.all}
           </button>
@@ -85,11 +85,10 @@ export function ExploreScreen({ onBack, onSelectPersona, userLevel }: ExploreScr
             <button
               key={key}
               onClick={() => setSelectedCategory(key)}
-              className={`shrink-0 px-3 py-1.5 rounded-full text-xs transition-all flex items-center gap-1 ${
-                selectedCategory === key
-                  ? 'text-white border'
-                  : 'text-gray-500 hover:text-gray-300'
-              }`}
+              className={`shrink-0 px-3 py-1.5 rounded-full text-xs transition-all flex items-center gap-1 ${selectedCategory === key
+                ? 'text-white border'
+                : 'text-gray-500 hover:text-gray-300'
+                }`}
               style={selectedCategory === key ? {
                 backgroundColor: `${info.color}15`,
                 borderColor: `${info.color}40`,
@@ -108,11 +107,10 @@ export function ExploreScreen({ onBack, onSelectPersona, userLevel }: ExploreScr
             <button
               key={r}
               onClick={() => setSelectedRarity(r)}
-              className={`px-2.5 py-1 rounded-full text-xs transition-all ${
-                selectedRarity === r
-                  ? 'text-white'
-                  : 'text-gray-600 hover:text-gray-400'
-              }`}
+              className={`px-2.5 py-1 rounded-full text-xs transition-all ${selectedRarity === r
+                ? 'text-white'
+                : 'text-gray-600 hover:text-gray-400'
+                }`}
               style={selectedRarity === r && r !== 'all' ? {
                 backgroundColor: `${getRarityColor(r)}20`,
                 color: getRarityColor(r),
@@ -138,9 +136,8 @@ export function ExploreScreen({ onBack, onSelectPersona, userLevel }: ExploreScr
               key={persona.id}
               onClick={() => !locked && onSelectPersona(persona)}
               disabled={locked}
-              className={`relative glass rounded-2xl p-4 text-left transition-all group ${
-                locked ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-[0.98] cursor-pointer'
-              }`}
+              className={`relative glass rounded-2xl p-4 text-left transition-all group ${locked ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-[0.98] cursor-pointer'
+                }`}
               style={{
                 borderColor: `${persona.color}15`,
               }}
@@ -216,6 +213,10 @@ export function ExploreScreen({ onBack, onSelectPersona, userLevel }: ExploreScr
           <p className="text-gray-600 text-xs">{t.tryDifferent}</p>
         </div>
       )}
+
+      <div className="mt-8 mb-4 px-4 w-full">
+        <AdBanner dataAdSlot="explore-bottom-ad" />
+      </div>
     </div>
   );
 }
