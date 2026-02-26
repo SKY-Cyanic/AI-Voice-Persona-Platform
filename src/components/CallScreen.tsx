@@ -4,7 +4,7 @@ import { Persona, EmotionState } from '../types';
 import { useI18n } from '../i18n/context';
 
 interface CallScreenProps {
-  persona: Persona;
+  personas: Persona[];
   isConnected: boolean;
   isSpeaking: boolean;
   emotion: EmotionState;
@@ -15,7 +15,7 @@ interface CallScreenProps {
 }
 
 export function CallScreen({
-  persona,
+  personas,
   isConnected,
   isSpeaking,
   emotion: _emotion,
@@ -25,6 +25,7 @@ export function CallScreen({
   transcript,
 }: CallScreenProps) {
   const { t } = useI18n();
+  const primaryPersona = personas[0] || {};
   const [duration, setDuration] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [showTranscript, setShowTranscript] = useState(false);
@@ -66,7 +67,8 @@ export function CallScreen({
   }, [isMuted, onToggleMute]);
 
   const getCategoryName = () => {
-    return t.categories[persona.category]?.name || persona.category;
+    if (personas.length > 1) return 'Group Call';
+    return t.categories[primaryPersona.category]?.name || primaryPersona.category;
   };
 
   return (
@@ -74,13 +76,13 @@ export function CallScreen({
       <div
         className="absolute inset-0 transition-all duration-1000"
         style={{
-          background: `radial-gradient(circle at 50% 40%, ${persona.color}${bgPulse ? '25' : '10'} 0%, transparent 60%)`,
+          background: `radial-gradient(circle at 50% 40%, ${primaryPersona.color}${bgPulse ? '25' : '10'} 0%, transparent 60%)`,
         }}
       />
       <div
         className="absolute inset-0 transition-opacity duration-500"
         style={{
-          background: `radial-gradient(circle at 50% 60%, ${persona.color}08 0%, transparent 40%)`,
+          background: `radial-gradient(circle at 50% 60%, ${primaryPersona.color}08 0%, transparent 40%)`,
           opacity: bgPulse ? 1 : 0.3,
         }}
       />
@@ -113,37 +115,55 @@ export function CallScreen({
           <div
             className="absolute inset-[-20px] rounded-full transition-all duration-500"
             style={{
-              background: `radial-gradient(circle, ${persona.color}20, transparent)`,
+              background: `radial-gradient(circle, ${primaryPersona.color}20, transparent)`,
               transform: isSpeaking ? 'scale(1.3)' : 'scale(1)',
             }}
           />
           <div
             className="absolute inset-[-10px] rounded-full border transition-all duration-300"
             style={{
-              borderColor: `${persona.color}${isSpeaking ? '60' : '20'}`,
-              boxShadow: isSpeaking ? `0 0 30px ${persona.color}30` : 'none',
+              borderColor: `${primaryPersona.color}${isSpeaking ? '60' : '20'}`,
+              boxShadow: isSpeaking ? `0 0 30px ${primaryPersona.color}30` : 'none',
             }}
           />
 
-          <div
-            className={`w-36 h-36 md:w-44 md:h-44 rounded-full flex items-center justify-center text-7xl md:text-8xl
-              ${isSpeaking ? 'animate-avatar-breathe' : ''}`}
-            style={{
-              background: `radial-gradient(circle at 30% 30%, ${persona.color}30, ${persona.color}10)`,
-              boxShadow: `0 0 ${isSpeaking ? 60 : 20}px ${persona.color}${isSpeaking ? '40' : '15'}`,
-            }}
-          >
-            {persona.avatar}
-          </div>
+          {personas.length === 1 ? (
+            <div
+              className={`w-36 h-36 md:w-44 md:h-44 rounded-full flex items-center justify-center text-7xl md:text-8xl overflow-hidden
+                ${isSpeaking ? 'animate-avatar-breathe' : ''}`}
+              style={{
+                background: `radial-gradient(circle at 30% 30%, ${primaryPersona.color}30, ${primaryPersona.color}10)`,
+                boxShadow: `0 0 ${isSpeaking ? 60 : 20}px ${primaryPersona.color}${isSpeaking ? '40' : '15'}`,
+              }}
+            >
+              {primaryPersona.imageUrl ? <img src={primaryPersona.imageUrl} className="w-full h-full object-cover" alt={primaryPersona.name} /> : primaryPersona.avatar}
+            </div>
+          ) : (
+            <div className={`flex items-center justify-center gap-4 ${isSpeaking ? 'animate-avatar-breathe' : ''}`}>
+              {personas.map((p, idx) => (
+                <div
+                  key={idx}
+                  className="w-24 h-24 md:w-32 md:h-32 rounded-full flex items-center justify-center text-5xl md:text-6xl border-4 border-dark-900 overflow-hidden"
+                  style={{
+                    background: `radial-gradient(circle, ${p.color}30, ${p.color}10)`,
+                    marginLeft: idx > 0 ? '-20px' : '0',
+                    zIndex: 10 - idx
+                  }}
+                >
+                  {p.imageUrl ? <img src={p.imageUrl} className="w-full h-full object-cover" alt={p.name} /> : p.avatar}
+                </div>
+              ))}
+            </div>
+          )}
 
           {isSpeaking && (
-            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 flex items-center gap-0.5">
+            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 flex items-center gap-0.5 z-20">
               {[0, 1, 2, 3, 4].map(i => (
                 <div
                   key={i}
                   className="w-1 rounded-full"
                   style={{
-                    backgroundColor: persona.color,
+                    backgroundColor: primaryPersona.color,
                     animation: `waveform ${0.3 + i * 0.1}s ease-in-out infinite`,
                     height: '12px',
                   }}
@@ -153,14 +173,18 @@ export function CallScreen({
           )}
         </div>
 
-        <h2 className="font-display text-2xl md:text-3xl font-bold text-white mb-1">{persona.name}</h2>
-        <p className="text-gray-400 text-sm mb-2">{persona.tagline}</p>
+        <h2 className="font-display text-2xl md:text-3xl font-bold text-white mb-1 text-center">
+          {personas.map(p => p.name).join(' & ')}
+        </h2>
+        <p className="text-gray-400 text-sm mb-2 text-center">
+          {personas.length === 1 ? primaryPersona.tagline : 'Group Conversation'}
+        </p>
         <div
-          className="px-3 py-1 rounded-full text-xs font-body"
+          className="px-3 py-1 rounded-full text-xs font-body mx-auto w-max"
           style={{
-            backgroundColor: `${persona.color}20`,
-            color: persona.color,
-            border: `1px solid ${persona.color}30`,
+            backgroundColor: `${primaryPersona.color}20`,
+            color: primaryPersona.color,
+            border: `1px solid ${primaryPersona.color}30`,
           }}
         >
           {getCategoryName()}
@@ -179,7 +203,7 @@ export function CallScreen({
               className="w-1 rounded-full transition-all duration-100"
               style={{
                 height: `${h}px`,
-                backgroundColor: persona.color,
+                backgroundColor: primaryPersona.color,
                 opacity: 0.3 + (h / 32) * 0.7,
               }}
             />
@@ -232,7 +256,7 @@ export function CallScreen({
             onClick={() => setShowTranscript(!showTranscript)}
             className="w-14 h-14 rounded-full glass flex items-center justify-center transition-all hover:scale-110 active:scale-95"
             style={{
-              borderColor: showTranscript ? `${persona.color}60` : 'rgba(255,255,255,0.1)',
+              borderColor: showTranscript ? `${primaryPersona.color}60` : 'rgba(255,255,255,0.1)',
             }}
           >
             <MessageSquare size={22} className={showTranscript ? 'text-neon-blue' : 'text-white'} />

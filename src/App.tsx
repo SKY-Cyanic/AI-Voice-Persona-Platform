@@ -13,6 +13,7 @@ import { PostCallScreen } from './components/PostCallScreen';
 import { ExploreScreen } from './components/ExploreScreen';
 import { ProfileScreen } from './components/ProfileScreen';
 import { PremiumScreen } from './components/PremiumScreen';
+import { StudioScreen } from './components/StudioScreen';
 
 function loadProfile(): UserProfile {
   try {
@@ -28,7 +29,9 @@ function loadProfile(): UserProfile {
     totalMinutes: 0,
     favorites: [],
     unlockedPersonas: [],
+    customPersonas: [],
     achievements: [],
+    savedCalls: [],
   };
 }
 
@@ -58,11 +61,12 @@ function saveApiKey(key: string) {
 function AppContent() {
   const { lang } = useI18n();
   const [screen, setScreen] = useState<AppScreen>('home');
-  const [currentPersona, setCurrentPersona] = useState<Persona | null>(null);
+  const [currentPersonas, setCurrentPersonas] = useState<Persona[] | null>(null);
   const [profile, setProfile] = useState<UserProfile>(loadProfile);
   const [callDuration, setCallDuration] = useState(0);
   const [apiKey, setApiKey] = useState<string>(loadApiKey);
   const [showApiKeyScreen, setShowApiKeyScreen] = useState(!loadApiKey());
+  const [lastTranscript, setLastTranscript] = useState<string[]>([]);
   const callStartRef = useRef<number>(0);
   const durationIntervalRef = useRef<ReturnType<typeof setInterval>>(undefined);
 
@@ -100,15 +104,31 @@ function AppContent() {
 
   const startCall = useCallback((category?: PersonaCategory) => {
     const persona = getRandomPersona(category);
-    setCurrentPersona(persona);
+    setCurrentPersonas([persona]);
     setCallDuration(0);
+    setLastTranscript([]);
     setScreen('connecting');
     gemini.connect(persona);
   }, [gemini]);
 
-  const startCallWithPersona = useCallback((persona: Persona) => {
-    setCurrentPersona(persona);
+  const startGroupCall = useCallback(() => {
+    const p1 = getRandomPersona('chaos'); // mix it up
+    let p2 = getRandomPersona('romance');
+    while (p1.id === p2.id) {
+      p2 = getRandomPersona();
+    }
+    const group = [p1, p2];
+    setCurrentPersonas(group);
     setCallDuration(0);
+    setLastTranscript([]);
+    setScreen('connecting');
+    gemini.connect(group);
+  }, [gemini]);
+
+  const startCallWithPersona = useCallback((persona: Persona) => {
+    setCurrentPersonas([persona]);
+    setCallDuration(0);
+    setLastTranscript([]);
     setScreen('connecting');
     gemini.connect(persona);
   }, [gemini]);
@@ -118,11 +138,17 @@ function AppContent() {
   }, []);
 
   const endCall = useCallback(() => {
+    setLastTranscript(gemini.transcript);
     gemini.disconnect();
     if (durationIntervalRef.current) {
       clearInterval(durationIntervalRef.current);
     }
-    const finalDuration = Math.floor((Date.now() - callStartRef.current) / 1000);
+
+    let finalDuration = 0;
+    if (callStartRef.current > 0) {
+      finalDuration = Math.floor((Date.now() - callStartRef.current) / 1000);
+    }
+
     setCallDuration(finalDuration);
 
     setProfile(prev => ({
@@ -133,14 +159,36 @@ function AppContent() {
       level: Math.floor((prev.xp + Math.floor(finalDuration / 10) + 5) / 100) + 1,
     }));
 
+    callStartRef.current = 0;
     setScreen('postCall');
   }, [gemini]);
 
+  const handleSaveMemory = useCallback((transcriptToSave: string[]) => {
+    if (!currentPersonas) return;
+    const memory = {
+      id: `mem_${Date.now()}`,
+      persona: currentPersonas[0],
+      duration: callDuration,
+      date: new Date(),
+      emotion: 'neutral' as const,
+      saved: true,
+      transcript: transcriptToSave,
+    };
+    setProfile(prev => ({
+      ...prev,
+      savedCalls: [memory, ...(prev.savedCalls || [])]
+    }));
+  }, [currentPersonas, callDuration]);
+
   const callAgain = useCallback(() => {
-    if (currentPersona) {
-      startCallWithPersona(currentPersona);
+    if (currentPersonas) {
+      if (currentPersonas.length > 1) {
+        startGroupCall();
+      } else {
+        startCallWithPersona(currentPersonas[0]);
+      }
     }
-  }, [currentPersona, startCallWithPersona]);
+  }, [currentPersonas, startCallWithPersona, startGroupCall]);
 
   const newCall = useCallback(() => {
     startCall();
@@ -149,8 +197,16 @@ function AppContent() {
   const goHome = useCallback(() => {
     gemini.disconnect();
     setScreen('home');
-    setCurrentPersona(null);
+    setCurrentPersonas(null);
   }, [gemini]);
+
+  const handleSavePersona = useCallback((newPersona: Persona) => {
+    setProfile(prev => ({
+      ...prev,
+      customPersonas: [newPersona, ...(prev.customPersonas || [])]
+    }));
+    setScreen('home');
+  }, []);
 
   // Show API key screen if no key
   if (showApiKeyScreen) {
@@ -187,24 +243,26 @@ function AppContent() {
         {screen === 'home' && (
           <HomeScreen
             onStartCall={startCall}
+            onGroupCall={startGroupCall}
             onExplore={() => setScreen('explore')}
             onPremium={() => setScreen('premium')}
             onProfile={() => setScreen('profile')}
+            onStudio={() => setScreen('studio')}
             totalCalls={profile.totalCalls}
             onChangeApiKey={handleChangeApiKey}
           />
         )}
 
-        {screen === 'connecting' && currentPersona && (
+        {screen === 'connecting' && currentPersonas && (
           <ConnectingScreen
-            persona={currentPersona}
+            persona={currentPersonas[0]}
             onConnected={onConnected}
           />
         )}
 
-        {screen === 'call' && currentPersona && (
+        {screen === 'call' && currentPersonas && (
           <CallScreen
-            persona={currentPersona}
+            personas={currentPersonas}
             isConnected={gemini.isConnected}
             isSpeaking={gemini.isSpeaking}
             emotion={gemini.emotion}
@@ -215,10 +273,12 @@ function AppContent() {
           />
         )}
 
-        {screen === 'postCall' && currentPersona && (
+        {screen === 'postCall' && currentPersonas && (
           <PostCallScreen
-            persona={currentPersona}
+            personas={currentPersonas}
             duration={callDuration}
+            transcript={lastTranscript}
+            onSaveMemory={handleSaveMemory}
             onCallAgain={callAgain}
             onNewCall={newCall}
             onGoHome={goHome}
@@ -230,6 +290,7 @@ function AppContent() {
             onBack={goHome}
             onSelectPersona={startCallWithPersona}
             userLevel={profile.level}
+            customPersonas={profile.customPersonas || []}
           />
         )}
 
@@ -244,6 +305,14 @@ function AppContent() {
           <PremiumScreen
             onBack={goHome}
             currentTier={profile.subscriptionTier || 'free'}
+          />
+        )}
+
+        {screen === 'studio' && (
+          <StudioScreen
+            onBack={goHome}
+            onSave={handleSavePersona}
+            isPro={profile.subscriptionTier === 'pro'}
           />
         )}
       </div>

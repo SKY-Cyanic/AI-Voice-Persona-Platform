@@ -9,9 +9,10 @@ interface ExploreScreenProps {
   onBack: () => void;
   onSelectPersona: (persona: Persona) => void;
   userLevel: number;
+  customPersonas: Persona[];
 }
 
-export function ExploreScreen({ onBack, onSelectPersona, userLevel }: ExploreScreenProps) {
+export function ExploreScreen({ onBack, onSelectPersona, userLevel, customPersonas }: ExploreScreenProps) {
   const { t } = useI18n();
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -23,7 +24,9 @@ export function ExploreScreen({ onBack, onSelectPersona, userLevel }: ExploreScr
     return t.categories[key]?.name || categoryInfo[key]?.name || key;
   };
 
-  const filtered = personas.filter(p => {
+  const allPersonas = [...customPersonas, ...personas];
+
+  const filtered = allPersonas.filter(p => {
     const catName = getCategoryName(p.category).toLowerCase();
     const matchesSearch = !search ||
       p.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -155,12 +158,12 @@ export function ExploreScreen({ onBack, onSelectPersona, userLevel }: ExploreScr
 
               <div className="flex items-start gap-3">
                 <div
-                  className="w-12 h-12 rounded-full flex items-center justify-center text-2xl shrink-0"
+                  className="w-12 h-12 rounded-full flex items-center justify-center text-2xl shrink-0 overflow-hidden"
                   style={{
                     background: `radial-gradient(circle, ${persona.color}25, ${persona.color}08)`,
                   }}
                 >
-                  {persona.avatar}
+                  {persona.imageUrl ? <img src={persona.imageUrl} className="w-full h-full object-cover" alt={persona.name} /> : persona.avatar}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">

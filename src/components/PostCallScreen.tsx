@@ -6,15 +6,18 @@ import { useI18n } from '../i18n/context';
 import { AdBanner } from './AdBanner';
 
 interface PostCallScreenProps {
-  persona: Persona;
+  personas: Persona[];
   duration: number;
+  transcript: string[];
+  onSaveMemory: (transcriptToSave: string[]) => void;
   onCallAgain: () => void;
   onNewCall: () => void;
   onGoHome: () => void;
 }
 
-export function PostCallScreen({ persona, duration, onCallAgain, onNewCall, onGoHome }: PostCallScreenProps) {
+export function PostCallScreen({ personas, duration, transcript, onSaveMemory, onCallAgain, onNewCall, onGoHome }: PostCallScreenProps) {
   const { t } = useI18n();
+  const primaryPersona = personas[0] || {};
   const [rating, setRating] = useState(0);
   const [isSaved, setIsSaved] = useState(false);
   const [isShared, setIsShared] = useState(false);
@@ -35,13 +38,14 @@ export function PostCallScreen({ persona, duration, onCallAgain, onNewCall, onGo
   const getXP = () => Math.floor(duration / 10) + 5;
 
   const getCategoryName = () => {
-    return t.categories[persona.category]?.name || persona.category;
+    if (personas.length > 1) return 'Group Call';
+    return t.categories[primaryPersona.category]?.name || primaryPersona.category;
   };
 
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center bg-dark-900 z-50 px-4">
       <div className="absolute inset-0" style={{
-        background: `radial-gradient(circle at 50% 30%, ${persona.color}10 0%, transparent 50%)`,
+        background: `radial-gradient(circle at 50% 30%, ${primaryPersona.color}10 0%, transparent 50%)`,
       }} />
 
       <button
@@ -55,34 +59,57 @@ export function PostCallScreen({ persona, duration, onCallAgain, onNewCall, onGo
         <div className="text-center mb-6 animate-slide-up">
           <span className="text-4xl">{getEmoji()}</span>
           <h2 className="font-display text-xl font-bold text-white mt-2">{t.callEnded}</h2>
-          <p className="text-gray-400 text-sm">{formatTime(duration)} {t.withPerson} {persona.name}</p>
+          <p className="text-gray-400 text-sm">{formatTime(duration)} {t.withPerson} {personas.map(p => p.name).join(' & ')}</p>
         </div>
 
         <div className="glass rounded-3xl p-6 mb-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
           <div className="flex items-center gap-4 mb-4">
-            <div
-              className="w-16 h-16 rounded-full flex items-center justify-center text-3xl"
-              style={{
-                background: `radial-gradient(circle, ${persona.color}30, ${persona.color}10)`,
-                boxShadow: `0 0 20px ${persona.color}20`,
-              }}
-            >
-              {persona.avatar}
-            </div>
-            <div className="flex-1">
-              <h3 className="font-display text-lg font-bold text-white">{persona.name}</h3>
-              <p className="text-gray-400 text-xs">{persona.description}</p>
-              <div className="flex items-center gap-2 mt-1">
-                <span
-                  className="text-xs px-2 py-0.5 rounded-full"
-                  style={{
-                    color: getRarityColor(persona.rarity),
-                    backgroundColor: `${getRarityColor(persona.rarity)}15`,
-                    border: `1px solid ${getRarityColor(persona.rarity)}30`,
-                  }}
-                >
-                  {persona.rarity.toUpperCase()}
-                </span>
+            {personas.length === 1 ? (
+              <div
+                className="w-16 h-16 rounded-full flex items-center justify-center text-3xl shrink-0 overflow-hidden"
+                style={{
+                  background: `radial-gradient(circle, ${primaryPersona.color}30, ${primaryPersona.color}10)`,
+                  boxShadow: `0 0 20px ${primaryPersona.color}20`,
+                }}
+              >
+                {primaryPersona.imageUrl ? <img src={primaryPersona.imageUrl} className="w-full h-full object-cover" alt={primaryPersona.name} /> : primaryPersona.avatar}
+              </div>
+            ) : (
+              <div className="flex items-center shrink-0">
+                {personas.map((p, idx) => (
+                  <div
+                    key={idx}
+                    className="w-12 h-12 rounded-full flex items-center justify-center text-2xl border-2 border-dark-900 overflow-hidden"
+                    style={{
+                      background: `radial-gradient(circle, ${p.color}30, ${p.color}10)`,
+                      marginLeft: idx > 0 ? '-12px' : '0',
+                      zIndex: 10 - idx
+                    }}
+                  >
+                    {p.imageUrl ? <img src={p.imageUrl} className="w-full h-full object-cover" alt={p.name} /> : p.avatar}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="flex-1 min-w-0">
+              <h3 className="font-display text-lg font-bold text-white truncate">{personas.map(p => p.name).join(' & ')}</h3>
+              <p className="text-gray-400 text-xs truncate">
+                {personas.length === 1 ? primaryPersona.description : 'Group Conversation'}
+              </p>
+              <div className="flex items-center flex-wrap gap-2 mt-1">
+                {personas.length === 1 && (
+                  <span
+                    className="text-xs px-2 py-0.5 rounded-full"
+                    style={{
+                      color: getRarityColor(primaryPersona.rarity),
+                      backgroundColor: `${getRarityColor(primaryPersona.rarity)}15`,
+                      border: `1px solid ${getRarityColor(primaryPersona.rarity)}30`,
+                    }}
+                  >
+                    {primaryPersona.rarity.toUpperCase()}
+                  </span>
+                )}
                 <span className="text-xs text-gray-500">{getCategoryName()}</span>
               </div>
             </div>
@@ -124,7 +151,12 @@ export function PostCallScreen({ persona, duration, onCallAgain, onNewCall, onGo
 
           <div className="flex gap-2">
             <button
-              onClick={() => setIsSaved(!isSaved)}
+              onClick={() => {
+                if (!isSaved) {
+                  setIsSaved(true);
+                  onSaveMemory(transcript);
+                }
+              }}
               className={`flex-1 py-2 rounded-xl text-xs flex items-center justify-center gap-1 transition-all
                 ${isSaved ? 'bg-neon-pink/20 text-neon-pink border border-neon-pink/30' : 'glass text-gray-400 hover:text-white'}`}
             >
@@ -153,9 +185,9 @@ export function PostCallScreen({ persona, duration, onCallAgain, onNewCall, onGo
             onClick={onCallAgain}
             className="flex-1 py-4 rounded-2xl font-display text-sm font-bold flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95"
             style={{
-              background: `linear-gradient(135deg, ${persona.color}40, ${persona.color}20)`,
-              border: `1px solid ${persona.color}40`,
-              color: persona.color,
+              background: `linear-gradient(135deg, ${primaryPersona.color}40, ${primaryPersona.color}20)`,
+              border: `1px solid ${primaryPersona.color}40`,
+              color: primaryPersona.color,
             }}
           >
             <Phone size={18} />

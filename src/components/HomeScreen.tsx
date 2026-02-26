@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Phone, Sparkles, Users, Clock, Zap, ChevronDown, Globe, Settings, Crown } from 'lucide-react';
+import { Phone, Sparkles, Users, Clock, Zap, ChevronDown, Globe, Settings, Crown, UserPlus } from 'lucide-react';
 import { PersonaCategory } from '../types';
 import { categoryInfo } from '../data/personas';
 import { useI18n } from '../i18n/context';
@@ -7,20 +7,27 @@ import { AdBanner } from './AdBanner';
 
 interface HomeScreenProps {
   onStartCall: (category?: PersonaCategory) => void;
+  onGroupCall: () => void;
   onExplore: () => void;
   onPremium: () => void;
   onProfile: () => void;
+  onStudio: () => void;
   totalCalls: number;
   onChangeApiKey: () => void;
 }
 
-export function HomeScreen({ onStartCall, onExplore, onPremium, onProfile, totalCalls, onChangeApiKey }: HomeScreenProps) {
+export function HomeScreen({ onStartCall, onGroupCall, onExplore, onPremium, onProfile, onStudio, totalCalls, onChangeApiKey }: HomeScreenProps) {
   const { t, lang, setLang } = useI18n();
   const [onlineCount, setOnlineCount] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [showCategories, setShowCategories] = useState(false);
   const [pulseScale, setPulseScale] = useState(1);
   const [showSettings, setShowSettings] = useState(false);
+  const [connectTime, setConnectTime] = useState(0.3);
+
+  useEffect(() => {
+    setConnectTime(Number((Math.random() * 0.8 + 0.2).toFixed(1)));
+  }, []);
 
   useEffect(() => {
     setOnlineCount(Math.floor(Math.random() * 50000) + 23000);
@@ -49,16 +56,19 @@ export function HomeScreen({ onStartCall, onExplore, onPremium, onProfile, total
   };
 
   return (
-    <div className="relative flex flex-col items-center justify-center min-h-screen px-4 py-8">
+    <div className="relative flex flex-col items-center justify-center min-h-screen px-4 p-8 pt-24 sm:pt-8 w-full max-w-[100vw] overflow-hidden">
       {/* Top bar */}
-      <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-4 z-10">
-        <div className="flex items-center gap-2">
+      <div className="absolute top-0 left-0 w-full flex flex-row items-start justify-between p-4 z-10 gap-x-2 pointer-events-none">
+        <div className="flex items-center gap-2 mt-1 shrink-0 pointer-events-auto">
           <div className="w-2 h-2 rounded-full bg-neon-green animate-pulse" />
-          <span className="text-xs text-gray-400 font-body">
+          <span className="text-[10px] sm:text-xs text-gray-400 font-body whitespace-nowrap hidden sm:inline-block">
             <span className="text-neon-green font-semibold">{onlineCount.toLocaleString()}</span> {t.talkingNow}
           </span>
+          <span className="text-[10px] text-gray-400 font-body whitespace-nowrap sm:hidden">
+            <span className="text-neon-green font-semibold">{Math.floor(onlineCount / 1000)}k</span> {t.talkingNow}
+          </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-end gap-2 flex-1 pointer-events-auto">
           {/* Language toggle */}
           <button
             onClick={() => setLang(lang === 'en' ? 'ko' : 'en')}
@@ -86,6 +96,13 @@ export function HomeScreen({ onStartCall, onExplore, onPremium, onProfile, total
           >
             <Crown size={12} className="text-neon-yellow" />
             Premium
+          </button>
+          <button
+            onClick={onStudio}
+            className="glass rounded-full px-3 py-1.5 text-xs text-neon-blue hover:text-white transition-colors flex items-center gap-1 border border-neon-blue/30"
+          >
+            <UserPlus size={12} />
+            Studio
           </button>
           <button
             onClick={onProfile}
@@ -133,18 +150,18 @@ export function HomeScreen({ onStartCall, onExplore, onPremium, onProfile, total
       </div>
 
       {/* Stats */}
-      <div className="flex gap-6 mb-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-        <div className="flex items-center gap-2 text-xs text-gray-500">
+      <div className="flex gap-4 sm:gap-6 mb-8 animate-slide-up whitespace-nowrap" style={{ animationDelay: '0.1s' }}>
+        <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-gray-500">
           <Phone size={12} className="text-neon-pink" />
           <span>{(totalCalls || 0).toLocaleString()} {t.callsMade}</span>
         </div>
-        <div className="flex items-center gap-2 text-xs text-gray-500">
+        <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-gray-500">
           <Clock size={12} className="text-neon-blue" />
           <span>{t.avgTime}</span>
         </div>
-        <div className="flex items-center gap-2 text-xs text-gray-500">
+        <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-gray-500">
           <Zap size={12} className="text-neon-yellow" />
-          <span>{t.connectTime}</span>
+          <span>{lang === 'ko' ? `평균 ${connectTime}초 연결` : `Avg ${connectTime}s connect`}</span>
         </div>
       </div>
 
@@ -189,7 +206,7 @@ export function HomeScreen({ onStartCall, onExplore, onPremium, onProfile, total
       </div>
 
       {/* Main Call Button */}
-      <div className="relative mb-8 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+      <div className="relative mb-6 animate-slide-up" style={{ animationDelay: '0.2s' }}>
         <div className="absolute inset-0 rounded-full animate-pulse-neon" style={{ transform: 'scale(1.3)' }} />
         <div className="absolute inset-0 rounded-full" style={{
           background: 'radial-gradient(circle, rgba(255,45,120,0.15) 0%, transparent 70%)',
@@ -218,6 +235,18 @@ export function HomeScreen({ onStartCall, onExplore, onPremium, onProfile, total
           </div>
         </button>
       </div>
+
+      <button
+        onClick={onGroupCall}
+        className="mb-8 glass rounded-full px-6 py-2.5 text-sm font-bold text-white transition-all hover:scale-105 active:scale-95 flex items-center gap-2 animate-slide-up"
+        style={{
+          boxShadow: '0 0 20px rgba(0,212,255,0.2)',
+          borderColor: 'rgba(0,212,255,0.3)'
+        }}
+      >
+        <Users size={16} className="text-neon-blue" />
+        {lang === 'ko' ? '그룹 매칭 (다중 페르소나)' : 'Group Voice Call'}
+      </button>
 
       {/* Description */}
       <p className="text-gray-500 text-xs text-center max-w-xs animate-slide-up" style={{ animationDelay: '0.3s' }}>

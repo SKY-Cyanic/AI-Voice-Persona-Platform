@@ -3,6 +3,7 @@ export interface Persona {
   name: string;
   category: PersonaCategory;
   avatar: string;
+  imageUrl?: string;
   description: string;
   tagline: string;
   voice: string;
@@ -54,8 +55,10 @@ export interface UserProfile {
   totalMinutes: number;
   favorites: string[];
   unlockedPersonas: string[];
+  customPersonas: Persona[];
   achievements: Achievement[];
   subscriptionTier?: 'free' | 'plus' | 'pro';
+  savedCalls?: CallHistory[];
 }
 
 export interface Achievement {
@@ -74,4 +77,5 @@ export interface CallHistory {
   date: Date;
   emotion: EmotionState;
   saved: boolean;
+  transcript: string[];
 }

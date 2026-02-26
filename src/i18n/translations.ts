@@ -68,6 +68,11 @@ export interface Translations {
   // Profile
   profileTitle: string;
   levelCaller: string;
+  tabOverview: string;
+  tabMemory: string;
+  noSavedCalls: string;
+  transcriptLabel: string;
+
   totalCalls: string;
   minutesTalked: string;
   favorites: string;
@@ -118,6 +123,27 @@ export interface Translations {
   featNanoBananaPro: string;
   featEarlyAccess: string;
 
+  // Studio (Custom Personas)
+  studioTitle: string;
+  createPersona: string;
+  personaName: string;
+  personaDesc: string;
+
+  studioPersonality: string;
+  studioPersonalityHint: string;
+  studioBackground: string;
+  studioBackgroundHint: string;
+  studioStyle: string;
+  studioStyleHint: string;
+  studioOpening: string;
+  studioOpeningHint: string;
+
+  generateAvatar: string;
+  generateNanoBanana: string;
+  nanoBananaPrompt: string;
+  proRequired: string;
+  createButton: string;
+
   // Prompt language instructions
   promptLangInstruction: string;
 }
@@ -126,6 +152,28 @@ export const translations: Record<Language, Translations> = {
   en: {
     appTitle: 'LIVEPERSONA',
     appSubtitle: 'Random AI Voice Calls • Instant Connection • Infinite Personas',
+
+    // Studio
+    studioTitle: 'Creator Studio',
+    createPersona: 'Create Persona',
+    personaName: 'Persona Name',
+    personaDesc: 'Short Description',
+
+    // Granular Prompt Fields
+    studioPersonality: 'Core Personality',
+    studioPersonalityHint: 'e.g. Tsundere, Yandere, Caring older sister, Stern mentor...',
+    studioBackground: 'Background Story',
+    studioBackgroundHint: 'e.g. We grew up together but drifted apart. Or: A knight from a fallen kingdom.',
+    studioStyle: 'Speaking Style',
+    studioStyleHint: 'e.g. Uses a lot of slang, Speaks formally, Stutters when nervous.',
+    studioOpening: 'Opening Line',
+    studioOpeningHint: 'The exact first words they will say when the call connects.',
+
+    generateAvatar: 'Generate Avatar',
+    generateNanoBanana: '✨ NanoBanana Pro Generation',
+    nanoBananaPrompt: 'Describe the image you want (Pro tier required)...',
+    proRequired: 'Requires Pro Subscription',
+    createButton: 'Create & Save',
 
     apiKeyTitle: 'Welcome to LivePersona',
     apiKeySubtitle: 'Enter your Gemini API key to start making calls',
@@ -175,9 +223,15 @@ export const translations: Record<Language, Translations> = {
     noPersonasFound: 'No personas found',
     tryDifferent: 'Try a different search or category',
     levelRequired: 'Level {level} required',
+    // Profile Screen
+    profileTitle: 'Commander Profile',
+    levelCaller: 'Level {level} Operator',
 
-    profileTitle: 'Profile',
-    levelCaller: 'Level {level} Caller',
+    tabOverview: 'Overview',
+    tabMemory: 'Memory Bank',
+    noSavedCalls: 'No saved memories yet. Record your calls to save them here!',
+    transcriptLabel: 'Call Transcript',
+
     totalCalls: 'Total Calls',
     minutesTalked: 'Minutes Talked',
     favorites: 'Favorites',
@@ -247,6 +301,28 @@ export const translations: Record<Language, Translations> = {
     appTitle: 'LIVEPERSONA',
     appSubtitle: '랜덤 AI 음성 통화 • 즉시 연결 • 무한 페르소나',
 
+    // Studio
+    studioTitle: '크리에이터 스튜디오',
+    createPersona: '페르소나 생성',
+    personaName: '페르소나 이름',
+    personaDesc: '짧은 소개말',
+
+    // Granular Prompt Fields
+    studioPersonality: '핵심 성격 (Personality)',
+    studioPersonalityHint: '예: 츤데레 소꿉친구, 다정한 누나/오빠, 냉혹한 암살자 등...',
+    studioBackground: '배경 설정 (Background Story)',
+    studioBackgroundHint: '예: 어릴 적 친했지만 멀어진 사이. 혹은 마왕을 물리치러 가는 파티원.',
+    studioStyle: '말투 및 특징 (Speaking Style)',
+    studioStyleHint: '예: 반말을 쓰고 은어를 많이 씀, 딱딱한 군인 말투, 소심해서 말을 더듬음.',
+    studioOpening: '첫 인사말 (Opening Line)',
+    studioOpeningHint: '통화가 연결되자마자 AI가 항상 먼저 건넬 첫 마디를 작성하세요.',
+
+    generateAvatar: '아바타 생성',
+    generateNanoBanana: '✨ 나노바나나 프로 생성',
+    nanoBananaPrompt: '생성하고 싶은 아바타 이미지를 묘사하세요 (Pro 등급 필요)...',
+    proRequired: 'Pro 구독이 필요합니다',
+    createButton: '생성 및 저장',
+
     apiKeyTitle: 'LivePersona에 오신 것을 환영합니다',
     apiKeySubtitle: 'Gemini API 키를 입력하여 통화를 시작하세요',
     apiKeyPlaceholder: 'Gemini API 키를 여기에 붙여넣기...',
@@ -298,6 +374,12 @@ export const translations: Record<Language, Translations> = {
 
     profileTitle: '프로필',
     levelCaller: '레벨 {level} 콜러',
+
+    tabOverview: '요약 (Overview)',
+    tabMemory: '추억 저장소 (Memory)',
+    noSavedCalls: '아직 저장된 추억이 없습니다. 통화 후 요약 화면에서 저장 버튼을 눌러주세요!',
+    transcriptLabel: '통화 대화록',
+
     totalCalls: '총 통화',
     minutesTalked: '통화 시간 (분)',
     favorites: '즐겨찾기',
