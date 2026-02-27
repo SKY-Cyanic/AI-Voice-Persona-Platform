@@ -103,15 +103,23 @@ function AppContent() {
   }, []);
 
   const startCall = useCallback((category?: PersonaCategory) => {
+    if (!apiKey) {
+      setShowApiKeyScreen(true);
+      return;
+    }
     const persona = getRandomPersona(category);
     setCurrentPersonas([persona]);
     setCallDuration(0);
     setLastTranscript([]);
     setScreen('connecting');
     gemini.connect(persona);
-  }, [gemini]);
+  }, [gemini, apiKey]);
 
   const startGroupCall = useCallback(() => {
+    if (!apiKey) {
+      setShowApiKeyScreen(true);
+      return;
+    }
     const p1 = getRandomPersona('chaos'); // mix it up
     let p2 = getRandomPersona('romance');
     while (p1.id === p2.id) {
@@ -123,15 +131,19 @@ function AppContent() {
     setLastTranscript([]);
     setScreen('connecting');
     gemini.connect(group);
-  }, [gemini]);
+  }, [gemini, apiKey]);
 
   const startCallWithPersona = useCallback((persona: Persona) => {
+    if (!apiKey) {
+      setShowApiKeyScreen(true);
+      return;
+    }
     setCurrentPersonas([persona]);
     setCallDuration(0);
     setLastTranscript([]);
     setScreen('connecting');
     gemini.connect(persona);
-  }, [gemini]);
+  }, [gemini, apiKey]);
 
   const onConnected = useCallback(() => {
     setScreen('call');
@@ -208,16 +220,6 @@ function AppContent() {
     setScreen('home');
   }, []);
 
-  // Show API key screen if no key
-  if (showApiKeyScreen) {
-    return (
-      <div className="min-h-screen bg-dark-900 text-white font-body relative overflow-hidden">
-        <ParticleBackground />
-        <ApiKeyScreen onSubmit={handleApiKeySubmit} initialKey={apiKey} />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-dark-900 text-white font-body relative overflow-hidden">
       <ParticleBackground />
@@ -240,7 +242,9 @@ function AppContent() {
       />
 
       <div className="relative z-10">
-        {screen === 'home' && (
+        {showApiKeyScreen ? (
+          <ApiKeyScreen onSubmit={handleApiKeySubmit} initialKey={apiKey} />
+        ) : screen === 'home' && (
           <HomeScreen
             onStartCall={startCall}
             onGroupCall={startGroupCall}
