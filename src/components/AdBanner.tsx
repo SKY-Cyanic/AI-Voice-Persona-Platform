@@ -24,18 +24,25 @@ export function AdBanner({
 }: AdBannerProps) {
 
   useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
     try {
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
+      // Delay push to allow React to finish painting DOM layout dimensions
+      timeoutId = setTimeout(() => {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      }, 200);
     } catch (e) {
       console.error("AdSense error:", e);
     }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, []);
 
   return (
     <div className={`w-full flex justify-center overflow-hidden my-4 ${className}`}>
       <ins
         className="adsbygoogle"
-        style={style}
+        style={{ ...style, minWidth: '250px', minHeight: '50px', width: '100%' }}
         data-ad-client="ca-pub-6612970567702495" // Actual client ID
         data-ad-slot={dataAdSlot}
         data-ad-format={dataAdFormat}
