@@ -5,7 +5,6 @@ import { useGeminiAudio } from './hooks/useGeminiAudio';
 import { useI18n } from './i18n/context';
 import { I18nProvider } from './i18n/context';
 import { ParticleBackground } from './components/ParticleBackground';
-import { ApiKeyScreen } from './components/ApiKeyScreen';
 import { HomeScreen } from './components/HomeScreen';
 import { ConnectingScreen } from './components/ConnectingScreen';
 import { CallScreen } from './components/CallScreen';
@@ -52,11 +51,6 @@ function loadApiKey(): string {
   return '';
 }
 
-function saveApiKey(key: string) {
-  try {
-    localStorage.setItem('livepersona_api_key', key);
-  } catch { }
-}
 
 function AppContent() {
   const { lang } = useI18n();
@@ -64,8 +58,7 @@ function AppContent() {
   const [currentPersonas, setCurrentPersonas] = useState<Persona[] | null>(null);
   const [profile, setProfile] = useState<UserProfile>(loadProfile);
   const [callDuration, setCallDuration] = useState(0);
-  const [apiKey, setApiKey] = useState<string>(loadApiKey);
-  const [showApiKeyScreen, setShowApiKeyScreen] = useState(!loadApiKey());
+  const [apiKey] = useState<string>(loadApiKey);
   const [lastTranscript, setLastTranscript] = useState<string[]>([]);
   const callStartRef = useRef<number>(0);
   const durationIntervalRef = useRef<ReturnType<typeof setInterval>>(undefined);
@@ -92,21 +85,12 @@ function AppContent() {
     };
   }, [screen, gemini.isConnected]);
 
-  const handleApiKeySubmit = useCallback((key: string) => {
-    setApiKey(key);
-    saveApiKey(key);
-    setShowApiKeyScreen(false);
-  }, []);
-
   const handleChangeApiKey = useCallback(() => {
-    setShowApiKeyScreen(true);
+    // Deprecated explicitly changing API key via UI for crawling purposes.
+    // Rely on .env
   }, []);
 
   const startCall = useCallback((category?: PersonaCategory) => {
-    if (!apiKey) {
-      setShowApiKeyScreen(true);
-      return;
-    }
     const persona = getRandomPersona(category);
     setCurrentPersonas([persona]);
     setCallDuration(0);
@@ -116,10 +100,6 @@ function AppContent() {
   }, [gemini, apiKey]);
 
   const startGroupCall = useCallback(() => {
-    if (!apiKey) {
-      setShowApiKeyScreen(true);
-      return;
-    }
     const p1 = getRandomPersona('chaos'); // mix it up
     let p2 = getRandomPersona('romance');
     while (p1.id === p2.id) {
@@ -134,10 +114,6 @@ function AppContent() {
   }, [gemini, apiKey]);
 
   const startCallWithPersona = useCallback((persona: Persona) => {
-    if (!apiKey) {
-      setShowApiKeyScreen(true);
-      return;
-    }
     setCurrentPersonas([persona]);
     setCallDuration(0);
     setLastTranscript([]);
@@ -242,9 +218,7 @@ function AppContent() {
       />
 
       <div className="relative z-10">
-        {showApiKeyScreen ? (
-          <ApiKeyScreen onSubmit={handleApiKeySubmit} initialKey={apiKey} />
-        ) : screen === 'home' && (
+        {screen === 'home' && (
           <HomeScreen
             onStartCall={startCall}
             onGroupCall={startGroupCall}
