@@ -94,7 +94,9 @@ export function PremiumScreen({ onBack, currentTier = 'free' }: PremiumScreenPro
                         </div>
                     </div>
 
-                    <button className={`mt-8 w-full py-3 rounded-xl font-bold text-sm transition-all ${currentTier === 'plus' ? 'bg-neon-blue/20 text-neon-blue cursor-default' : 'bg-neon-blue text-dark-900 hover:bg-neon-blue/90 hover:shadow-[0_0_20px_rgba(0,212,255,0.4)]'}`}>
+                    <button
+                        onClick={() => currentTier !== 'plus' && window.open('https://buy.polar.sh/polar_cl_4uu9OkfnVE2RVVajdKuCoGuk4qkinI6RL767O1Pwwn1', '_blank')}
+                        className={`mt-8 w-full py-3 rounded-xl font-bold text-sm transition-all ${currentTier === 'plus' ? 'bg-neon-blue/20 text-neon-blue cursor-default' : 'bg-neon-blue text-dark-900 hover:bg-neon-blue/90 hover:shadow-[0_0_20px_rgba(0,212,255,0.4)]'}`}>
                         {currentTier === 'plus' ? t.currentPlan : t.selectPlan}
                     </button>
                 </div>
@@ -133,7 +135,9 @@ export function PremiumScreen({ onBack, currentTier = 'free' }: PremiumScreenPro
                         </div>
                     </div>
 
-                    <button className={`mt-8 w-full py-3 rounded-xl font-bold text-sm transition-all ${currentTier === 'pro' ? 'bg-neon-pink/20 text-neon-pink cursor-default' : 'bg-gradient-to-r from-neon-pink to-neon-purple text-white hover:shadow-[0_0_25px_rgba(255,45,120,0.6)] hover:scale-[1.02]'}`}>
+                    <button
+                        onClick={() => currentTier !== 'pro' && window.open('https://buy.polar.sh/polar_cl_ekwB4BT8HRbTDWS9oMIWTxa4vWgIckGoA3wgC2GyxTS', '_blank')}
+                        className={`mt-8 w-full py-3 rounded-xl font-bold text-sm transition-all ${currentTier === 'pro' ? 'bg-neon-pink/20 text-neon-pink cursor-default' : 'bg-gradient-to-r from-neon-pink to-neon-purple text-white hover:shadow-[0_0_25px_rgba(255,45,120,0.6)] hover:scale-[1.02]'}`}>
                         {currentTier === 'pro' ? t.currentPlan : t.selectPlan}
                     </button>
                 </div>

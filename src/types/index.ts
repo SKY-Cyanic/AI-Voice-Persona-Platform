@@ -34,7 +34,7 @@ export type PersonaCategory =
   | 'historical'
   | 'chaos';
 
-export type AppScreen = 'home' | 'connecting' | 'call' | 'postCall' | 'explore' | 'profile' | 'studio' | 'settings' | 'premium';
+export type AppScreen = 'auth' | 'home' | 'connecting' | 'call' | 'postCall' | 'explore' | 'profile' | 'studio' | 'settings' | 'premium';
 
 export interface CallState {
   persona: Persona | null;
@@ -58,6 +58,9 @@ export interface UserProfile {
   customPersonas: Persona[];
   achievements: Achievement[];
   subscriptionTier?: 'free' | 'plus' | 'pro';
+  polarSubscriptionId?: string;
+  tierExpiryDate?: Date;
+  id?: string;
   savedCalls?: CallHistory[];
 }
 

@@ -13,6 +13,8 @@ import { ExploreScreen } from './components/ExploreScreen';
 import { ProfileScreen } from './components/ProfileScreen';
 import { PremiumScreen } from './components/PremiumScreen';
 import { StudioScreen } from './components/StudioScreen';
+import { AuthScreen } from './components/AuthScreen';
+import { supabase } from './lib/supabase';
 
 function loadProfile(): UserProfile {
   try {
@@ -54,7 +56,8 @@ function loadApiKey(): string {
 
 function AppContent() {
   const { lang } = useI18n();
-  const [screen, setScreen] = useState<AppScreen>('home');
+  const [screen, setScreen] = useState<AppScreen>('auth');
+  const [isAuthChecking, setIsAuthChecking] = useState(true);
   const [currentPersonas, setCurrentPersonas] = useState<Persona[] | null>(null);
   const [profile, setProfile] = useState<UserProfile>(loadProfile);
   const [callDuration, setCallDuration] = useState(0);
@@ -63,12 +66,36 @@ function AppContent() {
   const callStartRef = useRef<number>(0);
   const durationIntervalRef = useRef<ReturnType<typeof setInterval>>(undefined);
 
-  const gemini = useGeminiAudio(apiKey, lang);
+  const gemini = useGeminiAudio(apiKey, lang, profile.subscriptionTier || 'free');
 
   // Save profile on change
   useEffect(() => {
     saveProfile(profile);
   }, [profile]);
+
+  // Handle Supabase Auth State
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setScreen('home');
+      } else {
+        setScreen('auth');
+      }
+      setIsAuthChecking(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        if (session) {
+          setScreen('home');
+        } else {
+          setScreen('auth');
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Track call duration
   useEffect(() => {
@@ -218,7 +245,16 @@ function AppContent() {
       />
 
       <div className="relative z-10">
-        {screen === 'home' && (
+        {isAuthChecking ? (
+          <div className="flex h-screen items-center justify-center">
+            <div className="w-8 h-8 rounded-full border-4 border-neon-blue border-t-transparent animate-spin" />
+          </div>
+        ) : screen === 'auth' ? (
+          <AuthScreen
+            onLoginSuccess={() => setScreen('home')}
+            onSkip={() => setScreen('home')}
+          />
+        ) : screen === 'home' && (
           <HomeScreen
             onStartCall={startCall}
             onGroupCall={startGroupCall}
