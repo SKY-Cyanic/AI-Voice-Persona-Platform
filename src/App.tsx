@@ -43,14 +43,7 @@ function saveProfile(profile: UserProfile) {
 }
 
 function loadApiKey(): string {
-  try {
-    const saved = localStorage.getItem('livepersona_api_key');
-    if (saved) return saved;
-  } catch { }
-  // Fallback to env variable
-  const envKey = import.meta.env.VITE_GEMINI_API_KEY;
-  if (envKey) return envKey;
-  return '';
+  return import.meta.env.VITE_GEMINI_API_KEY || '';
 }
 
 
